@@ -34,7 +34,12 @@ class App extends React.Component<Props, GameState> {
     /**
      * state has type GameState as specified in the class inheritance.
      */
-    this.state = { cells: [] }
+    this.state = { 
+      cells: [],
+      currentPlayer: 'X',
+      winner: null,
+      history: []
+    }
   }
 
   /**
@@ -113,8 +118,13 @@ class App extends React.Component<Props, GameState> {
      * can treat HTML elements as code.
      * @see https://reactjs.org/docs/introducing-jsx.html
      */
+    const instructionText = this.state.winner ? 
+      `${this.state.winner} is the Winner!` : 
+      `Player ${this.state.currentPlayer}, your turn!`;
+
     return (
       <div>
+        <div id="instructions">{instructionText}</div>
         <div id="board">
           {this.state.cells.map((cell, i) => this.createCell(cell, i))}
         </div>
@@ -125,6 +135,17 @@ class App extends React.Component<Props, GameState> {
         </div>
       </div>
     );
+  }
+  undo = () => {
+    if (this.state.history.length > 1) {
+      const newHistory = this.state.history.slice(0, -1); // remove the last state
+      const previousCells = newHistory[newHistory.length - 1]; // get the last state now
+      this.setState({ 
+        cells: previousCells,
+        history: newHistory, 
+        currentPlayer: this.state.currentPlayer === 'X' ? 'O' : 'X' 
+      });
+    }
   }
 }
 
